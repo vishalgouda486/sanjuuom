@@ -592,30 +592,29 @@ function typeLoaderQuote() {
     if (quoteIdx < quoteText.length) {
         loaderQuote.textContent += quoteText.charAt(quoteIdx);
         quoteIdx++;
-        setTimeout(typeLoaderQuote, 70);
+        
+        // Sync percentage directly to typing progress
+        const currentProgress = Math.floor((quoteIdx / quoteText.length) * 100);
+        loadPercentageNode.textContent = currentProgress;
+        
+        if (currentProgress >= 40) {
+            heartContainer.classList.add('pulse-active');
+        }
+        
+        // Play soft typewriter sound
+        if (Math.random() > 0.4) {
+            audio.playSFX('typing');
+        }
+        
+        setTimeout(typeLoaderQuote, 85); // slightly slower typing for readability
+    } else {
+        loadPercentageNode.textContent = "100";
+        setTimeout(triggerLoadingComplete, 1000);
     }
 }
 
 // Kick off typing shortly after load
-setTimeout(typeLoaderQuote, 500);
-
-// Simulate loading progress
-let currentProgress = 0;
-const loadInterval = setInterval(() => {
-    if (currentProgress < 100) {
-        currentProgress += Math.floor(Math.random() * 3) + 1;
-        if (currentProgress > 100) currentProgress = 100;
-        loadPercentageNode.textContent = currentProgress;
-        
-        // At 50%, start heart pulse fill
-        if (currentProgress >= 40) {
-            heartContainer.classList.add('pulse-active');
-        }
-    } else {
-        clearInterval(loadInterval);
-        triggerLoadingComplete();
-    }
-}, 60);
+setTimeout(typeLoaderQuote, 800);
 
 // Transition from loader to website
 function triggerLoadingComplete() {
@@ -833,34 +832,26 @@ document.getElementById('btn-to-gallery').addEventListener('click', () => {
     });
 });
 
-// Gallery -> Letter
+// Gallery -> Video
 document.getElementById('btn-to-letter').addEventListener('click', () => {
-    transitionSection('gallery-section', 'letter-section', () => {
-        startLetterTyping();
-        startRosePetals();
+    transitionSection('gallery-section', 'video-section', () => {
+        // Lower BGM volume
+        audio.fadeVolume(0.04, 1.5);
+        initVideoOrFallback();
     });
 });
 
-// Letter -> Video
+// Letter -> Decision
 document.getElementById('btn-letter-next').addEventListener('click', () => {
     // Only proceed if letter is fully shown or we are bypassing
     if (letterParagraphIndex >= letterParagraphs.length) {
-        transitionSection('letter-section', 'video-section', () => {
-            // Lower BGM volume
-            audio.fadeVolume(0.04, 1.5);
-            initVideoOrFallback();
+        transitionSection('letter-section', 'decision-section', () => {
+            setupDecisionPage();
         });
     } else {
         // Type next paragraph
         typeNextLetterParagraph();
     }
-});
-
-// Disclaimer -> Decision
-document.getElementById('btn-disclaimer-continue').addEventListener('click', () => {
-    transitionSection('disclaimer-section', 'decision-section', () => {
-        setupDecisionPage();
-    });
 });
 
 // Yes -> Ending
@@ -1301,15 +1292,16 @@ function handleVideoEnded() {
     fallbackPlaying = false;
     document.querySelector('.video-container-box').classList.remove('playing');
     
-    // Wait 2 seconds, then transition to Disclaimer Section
+    // Wait 2 seconds, then transition to Letter Section (now "A Small Promise")
     setTimeout(() => {
         // Bring back background particles
         bgParticles.active = true;
         // Fade BGM back up
         audio.fadeVolume(0.12, 1.5);
         
-        transitionSection('video-section', 'disclaimer-section', () => {
-            triggerDisclaimerReveal();
+        transitionSection('video-section', 'letter-section', () => {
+            startLetterTyping();
+            startRosePetals();
         });
     }, 2000);
 }
@@ -1648,8 +1640,8 @@ function triggerEndingCredits(decisionType) {
                     line.remove();
                     currentLineIdx++;
                     displayNextLine();
-                }, 1800);
-            }, 5500);
+                }, 1000);
+            }, 2800);
         } else {
             // Final fade away of everything
             setTimeout(() => {

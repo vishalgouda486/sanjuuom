@@ -553,6 +553,30 @@ html, body {
     max-width: 800px;
 }
 
+/* Breathing nebula gradient specifically behind the hero container */
+.hero-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150%;
+    height: 150%;
+    background: 
+        radial-gradient(circle at 30% 30%, rgba(255, 75, 139, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(157, 78, 221, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 50% 40%, rgba(0, 180, 216, 0.18) 0%, transparent 60%);
+    filter: blur(80px);
+    z-index: -2;
+    pointer-events: none;
+    animation: hero-nebula-breathe 14s infinite alternate ease-in-out;
+}
+
+@keyframes hero-nebula-breathe {
+    0% { transform: translate(-50%, -50%) rotate(0deg) scale(0.95); opacity: 0.8; }
+    100% { transform: translate(-48%, -52%) rotate(8deg) scale(1.05); opacity: 1; }
+}
+
 .hero-title {
     font-family: 'Playfair Display', serif;
     font-size: clamp(3rem, 8vw, 6.5rem);
@@ -769,23 +793,40 @@ html, body {
 /* Responsive Timeline */
 @media (max-width: 768px) {
     .timeline-line {
-        left: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0.35;
     }
     .timeline-card-wrapper {
         width: 100%;
-        padding-left: 60px;
-        padding-right: 20px;
-        margin-bottom: 60px;
+        padding: 0 15px;
+        margin-bottom: 70px;
+        display: flex;
     }
-    .timeline-card-wrapper.left, .timeline-card-wrapper.right {
+    .timeline-card-wrapper.left {
         left: 0;
         justify-content: flex-start;
+        padding-right: 35px;
     }
-    .scroll-trigger.left, .scroll-trigger.right {
-        transform: translateX(30px) scale(0.95);
+    .timeline-card-wrapper.right {
+        left: 0;
+        justify-content: flex-end;
+        padding-left: 35px;
     }
     .timeline-card {
-        max-width: 100%;
+        width: 82%;
+        max-width: 320px;
+        background: rgba(12, 10, 15, 0.85); /* Darker backdrop to overlay on top of the line */
+        backdrop-filter: blur(20px);
+    }
+    .scroll-trigger.left {
+        transform: translateX(-25px) scale(0.96);
+    }
+    .scroll-trigger.right {
+        transform: translateX(25px) scale(0.96);
+    }
+    .scroll-trigger.revealed {
+        transform: translateX(0) scale(1);
     }
 }
 
@@ -881,28 +922,50 @@ html, body {
 }
 
 @media (max-width: 900px) {
+    #gallery-section {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: var(--space-md) 0;
+    }
     .gallery-container {
-        height: auto;
-        min-height: 450px;
+        width: 100%;
+        height: 380px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        display: flex;
+        align-items: center;
+        padding: 0 40px;
+    }
+    /* Hide scrollbar for clean visual appearance */
+    .gallery-container::-webkit-scrollbar {
+        display: none;
     }
     .gallery-drifter {
         display: flex;
-        flex-direction: column;
+        flex-direction: row; /* Horizontal layout */
+        gap: 24px;
+        width: max-content;
+        height: 100%;
         align-items: center;
-        gap: 40px;
-        height: auto;
+        position: static;
     }
     .gallery-item {
         position: relative;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
         transform: rotate(0) !important;
-        width: 260px;
-        height: 340px;
+        width: 250px;
+        height: 330px;
+        scroll-snap-align: center;
+        flex-shrink: 0;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.6);
     }
     .gallery-item:hover {
-        transform: translateY(-10px) scale(1.05) !important;
+        transform: translateY(-10px) scale(1.02) !important;
     }
 }
 
@@ -1473,7 +1536,7 @@ html, body {
     color: rgba(255, 255, 255, 0.85);
     opacity: 0;
     transform: translateY(20px) scale(0.98);
-    transition: all 1.8s var(--ease-smooth);
+    transition: all 0.8s var(--ease-smooth);
     position: absolute;
     width: 100%;
     left: 0;
