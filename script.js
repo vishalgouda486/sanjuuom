@@ -835,6 +835,12 @@ document.getElementById('btn-to-gallery').addEventListener('click', () => {
 
 // Gallery -> Video
 document.getElementById('btn-to-letter').addEventListener('click', () => {
+    // Stop the mobile gallery autoscroll loop to save battery
+    if (galleryAutoscrollId) {
+        cancelAnimationFrame(galleryAutoscrollId);
+        galleryAutoscrollId = null;
+    }
+    
     transitionSection('gallery-section', 'video-section', () => {
         // Lower BGM volume
         audio.fadeVolume(0.04, 1.5);
@@ -901,6 +907,9 @@ function setupTimelineIntersectionObserver() {
 let galleryDriftId = null;
 const galleryItems = document.querySelectorAll('.gallery-item');
 let isGalleryScrolling = false;
+let galleryAutoscrollId = null;
+let isGalleryUserInteracting = false;
+let galleryInteractionTimeout = null;
 
 function initMobileInfiniteScroll() {
     if (window.innerWidth >= 900) return; // Only on mobile
@@ -946,12 +955,19 @@ function initMobileInfiniteScroll() {
     // Center Card 2 of Set B (index 4) on load
     const centerPos = getScrollPosForIndex(4);
     container.scrollLeft = centerPos;
+    let floatScrollPos = centerPos;
 
     // Scroll listener for seamless looping (manual marquee style)
     container.addEventListener('scroll', () => {
+        const scrollLeft = container.scrollLeft;
+        
+        // Sync our float accumulator if there's a manual swipe or jump
+        if (Math.abs(floatScrollPos - scrollLeft) > 4) {
+            floatScrollPos = scrollLeft;
+        }
+
         if (isGalleryScrolling) return;
 
-        const scrollLeft = container.scrollLeft;
         const setWidth = getScrollPosForIndex(6) - getScrollPosForIndex(3); // Width of exactly 3 cards + gaps
         
         const leftThreshold = getScrollPosForIndex(2); // Card 3 of Set A
@@ -961,15 +977,50 @@ function initMobileInfiniteScroll() {
         if (scrollLeft >= rightThreshold) {
             isGalleryScrolling = true;
             container.scrollLeft = scrollLeft - setWidth;
+            floatScrollPos = container.scrollLeft;
             setTimeout(() => { isGalleryScrolling = false; }, 50);
         }
         // If swiping left (finger moves right, scrolling left) and passing the left threshold
         else if (scrollLeft <= leftThreshold) {
             isGalleryScrolling = true;
             container.scrollLeft = scrollLeft + setWidth;
+            floatScrollPos = container.scrollLeft;
             setTimeout(() => { isGalleryScrolling = false; }, 50);
         }
     });
+
+    // Touch Event Listeners to pause autoscroll during user interaction
+    container.addEventListener('touchstart', () => {
+        isGalleryUserInteracting = true;
+        if (galleryInteractionTimeout) clearTimeout(galleryInteractionTimeout);
+    }, { passive: true });
+
+    container.addEventListener('touchend', () => {
+        // Resume autoscroll after 2.5 seconds of no touch interaction
+        galleryInteractionTimeout = setTimeout(() => {
+            isGalleryUserInteracting = false;
+            floatScrollPos = container.scrollLeft; // Sync position
+        }, 2500);
+    }, { passive: true });
+
+    container.addEventListener('touchcancel', () => {
+        galleryInteractionTimeout = setTimeout(() => {
+            isGalleryUserInteracting = false;
+            floatScrollPos = container.scrollLeft; // Sync position
+        }, 2500);
+    }, { passive: true });
+
+    // Start the autoscroll marquee loop
+    if (galleryAutoscrollId) cancelAnimationFrame(galleryAutoscrollId);
+    
+    function crawl() {
+        if (!isGalleryUserInteracting && !isGalleryScrolling) {
+            floatScrollPos += 0.55; // Extremely smooth slow crawl (0.55px per frame)
+            container.scrollLeft = Math.floor(floatScrollPos);
+        }
+        galleryAutoscrollId = requestAnimationFrame(crawl);
+    }
+    crawl();
 }
 
 function startGalleryDrift() {
