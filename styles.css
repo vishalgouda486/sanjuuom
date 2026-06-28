@@ -223,6 +223,21 @@ html, body {
     font-size: 0.75rem;
 }
 
+@media (max-width: 768px) {
+    #audio-toggle {
+        top: 15px;
+        right: 15px;
+        padding: 10px;
+        border-radius: 50%;
+        width: 42px;
+        height: 42px;
+        justify-content: center;
+    }
+    .audio-status-text {
+        display: none;
+    }
+}
+
 /* ==========================================================================
    Loading Screen
    ========================================================================== */
@@ -434,6 +449,13 @@ html, body {
     font-size: clamp(1rem, 2vw, 1.25rem);
     color: var(--text-secondary);
     font-weight: 300;
+}
+
+@media (max-width: 768px) {
+    .cinematic-title {
+        font-size: 1.9rem;
+        padding-top: 35px;
+    }
 }
 
 /* ==========================================================================
@@ -930,14 +952,15 @@ html, body {
         padding: var(--space-md) 0;
     }
     .gallery-container {
-        width: 100%;
+        width: 100vw;
+        margin-left: calc(-50vw + 50%); /* Break out of section padding for edge-to-edge swiping */
         height: 380px;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
         display: flex;
         align-items: center;
-        padding: 0 40px;
+        padding: 0;
     }
     /* Hide scrollbar for clean visual appearance */
     .gallery-container::-webkit-scrollbar {
@@ -951,6 +974,8 @@ html, body {
         height: 100%;
         align-items: center;
         position: static;
+        /* Padding on sides ensures the first and last cards snap exactly to the center of the screen */
+        padding: 0 calc(50vw - 125px); 
     }
     .gallery-item {
         position: relative;
@@ -1059,6 +1084,7 @@ html, body {
     font-style: italic;
     text-align: left;
     min-height: 150px;
+    white-space: pre-wrap; /* Support and preserve newlines and paragraphs */
 }
 
 .letter-cursor {

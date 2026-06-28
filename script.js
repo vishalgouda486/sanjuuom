@@ -1020,7 +1020,7 @@ function typeLetterChar() {
         letterBtnNext.style.opacity = '1';
         letterBtnNext.style.pointerEvents = 'auto';
         if (letterParagraphIndex >= letterParagraphs.length) {
-            letterBtnNext.querySelector('span').textContent = 'Read My Promise 💙';
+            letterBtnNext.querySelector('span').textContent = 'Make Your Choice ❤️';
         }
     }
 }
