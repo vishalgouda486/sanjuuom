@@ -1200,32 +1200,29 @@ let fallbackPlaying = false;
 let dreamParticles = [];
 
 function initVideoOrFallback() {
-    // Check if video file exists and can be played
+    // Reset state and ensure native video player is shown
+    isUsingFallback = false;
+    video.style.display = 'block';
+    videoCanvas.style.display = 'none';
+    videoPlaceholderUI.classList.remove('hidden');
+    document.querySelector('.video-container-box').classList.remove('playing');
+    
+    // Load the video source (OneDrive stream)
     video.load();
     
-    // We try to play the video. If it fails or has no source, we switch to fallback
-    const playPromise = video.play();
+    // Listen for media errors (e.g. invalid URL, unsupported format)
+    video.addEventListener('error', handleVideoError, { once: true });
     
-    if (playPromise !== undefined) {
-        playPromise.then(() => {
-            // Video is playing successfully!
-            video.pause(); // Pause it immediately to let the user click play
-            isUsingFallback = false;
-            videoCanvas.style.display = 'none';
-        }).catch(error => {
-            // Autoplay blocked or file missing. Set up canvas fallback
-            isUsingFallback = true;
-            video.style.display = 'none';
-            setupCanvasFallback();
-        });
-    } else {
-        isUsingFallback = true;
-        video.style.display = 'none';
-        setupCanvasFallback();
-    }
-    
-    // Stop background particles to focus attention
+    // Stop background particles to focus attention on the video
     bgParticles.active = false;
+}
+
+function handleVideoError(error) {
+    console.warn("Video error encountered. Switching to canvas fallback:", error);
+    isUsingFallback = true;
+    video.style.display = 'none';
+    videoCanvas.style.display = 'block';
+    setupCanvasFallback();
 }
 
 // Fallback Canvas Visualization (Dreamy Nebula & Particles)
@@ -1309,10 +1306,10 @@ function drawCanvasFallback() {
 
 function togglePlay() {
     audio.playSFX('click');
-    videoPlaceholderUI.classList.add('hidden');
-    document.querySelector('.video-container-box').classList.add('playing');
     
     if (isUsingFallback) {
+        videoPlaceholderUI.classList.add('hidden');
+        document.querySelector('.video-container-box').classList.add('playing');
         if (fallbackPlaying) {
             fallbackPlaying = false;
             cancelAnimationFrame(fallbackAnimId);
@@ -1326,9 +1323,20 @@ function togglePlay() {
         }
     } else {
         if (video.paused) {
-            video.play();
-            playPauseBtn.querySelector('.icon-play').classList.add('hidden');
-            playPauseBtn.querySelector('.icon-pause').classList.remove('hidden');
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    videoPlaceholderUI.classList.add('hidden');
+                    document.querySelector('.video-container-box').classList.add('playing');
+                    playPauseBtn.querySelector('.icon-play').classList.add('hidden');
+                    playPauseBtn.querySelector('.icon-pause').classList.remove('hidden');
+                }).catch(error => {
+                    console.warn("Playback failed. Switching to fallback:", error);
+                    handleVideoError(error);
+                    // Re-trigger play state on the fallback
+                    togglePlay();
+                });
+            }
         } else {
             video.pause();
             playPauseBtn.querySelector('.icon-play').classList.remove('hidden');
