@@ -171,33 +171,16 @@
             </div>
             <div class="gallery-container">
                 <div class="gallery-drifter">
-                    <!-- Clone of Item 3 for Infinite Loop Scroll on Mobile -->
-                    <div class="gallery-item item-3 clone magnetic-hover" data-tilt>
-                        <img src="assets/images/gallery_3.png" alt="Aesthetic Moment 3" loading="lazy">
-                        <div class="gallery-item-glow"></div>
-                    </div>
-
-                    <!-- Real Item 1 -->
                     <div class="gallery-item item-1 magnetic-hover" data-tilt>
                         <img src="assets/images/gallery_1.png" alt="Aesthetic Moment 1" loading="lazy">
                         <div class="gallery-item-glow"></div>
                     </div>
-
-                    <!-- Real Item 2 -->
                     <div class="gallery-item item-2 magnetic-hover" data-tilt>
                         <img src="assets/images/gallery_2.png" alt="Aesthetic Moment 2" loading="lazy">
                         <div class="gallery-item-glow"></div>
                     </div>
-
-                    <!-- Real Item 3 -->
                     <div class="gallery-item item-3 magnetic-hover" data-tilt>
                         <img src="assets/images/gallery_3.png" alt="Aesthetic Moment 3" loading="lazy">
-                        <div class="gallery-item-glow"></div>
-                    </div>
-
-                    <!-- Clone of Item 1 for Infinite Loop Scroll on Mobile -->
-                    <div class="gallery-item item-1 clone magnetic-hover" data-tilt>
-                        <img src="assets/images/gallery_1.png" alt="Aesthetic Moment 1" loading="lazy">
                         <div class="gallery-item-glow"></div>
                     </div>
                 </div>
@@ -259,12 +242,22 @@ Always. 💙"></p>
                     </video>
                     <canvas id="video-canvas-fallback"></canvas>
                     <div id="video-controls">
+                        <button id="btn-skip-back" class="video-control-btn" title="Rewind 10s">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="currentColor" d="M12.5 3C17.15 3 21 6.85 21 11.5S17.15 20 12.5 20c-3.76 0-6.95-2.46-8-5.92l1.93-.53c.8 2.72 3.32 4.45 6.07 4.45C16.1 18 19 15.1 19 11.5S16.1 5 12.5 5H12l2.5 2.5l-1.4 1.4L8.2 4l4.9-4.9l1.4 1.4L12 3h.5M6 10v6h2v-6H6m4 0v6h2v-6h-2z"/>
+                            </svg>
+                        </button>
                         <button id="btn-play-pause" class="video-control-btn">
                             <svg class="icon-play" viewBox="0 0 24 24" width="24" height="24">
                                 <path fill="currentColor" d="M8 5v14l11-7z"/>
                             </svg>
                             <svg class="icon-pause hidden" viewBox="0 0 24 24" width="24" height="24">
                                 <path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                            </svg>
+                        </button>
+                        <button id="btn-skip-forward" class="video-control-btn" title="Forward 10s">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="currentColor" d="M11.5 3C6.85 3 3 6.85 3 11.5S6.85 20 11.5 20c3.76 0 6.95-2.46 8-5.92l-1.93-.53c-.8 2.72-3.32 4.45-6.07 4.45C7.9 18 5 15.1 5 11.5S7.9 5 11.5 5H12L9.5 7.5l1.4 1.4L15.8 4l-4.9-4.9l-1.4 1.4L12 3h-.5m6 7v6h2v-6h-2m-4 0v6h2v-6h-2z"/>
                             </svg>
                         </button>
                         <div class="video-progress-bar">

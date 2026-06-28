@@ -944,7 +944,7 @@ html, body {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding: var(--space-lg) 0 var(--space-md) 0; /* Increased top padding to move text down */
+        padding: 130px 0 var(--space-md) 0; /* Pushes the title text further down */
     }
     .gallery-container {
         width: 100vw;
@@ -1196,12 +1196,51 @@ html, body {
     align-items: center;
     justify-content: center;
     padding: 5px;
-    transition: transform 0.2s var(--ease-smooth);
+    transition: transform 0.2s var(--ease-smooth), color 0.2s;
 }
 
 .video-control-btn:hover {
     transform: scale(1.1);
     color: var(--accent-pink);
+}
+
+/* YouTube-like Double-Tap Skip Overlay */
+.video-skip-overlay {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    z-index: 8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+    animation: skip-flash 0.4s ease-out;
+}
+
+.video-skip-overlay.back {
+    left: 0;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+.video-skip-overlay.forward {
+    right: 0;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.video-skip-overlay span {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0,0,0,0.8);
+    letter-spacing: 0.05em;
+}
+
+@keyframes skip-flash {
+    0% { opacity: 0; background: rgba(255, 255, 255, 0); }
+    50% { opacity: 1; background: rgba(255, 255, 255, 0.08); }
+    100% { opacity: 0; background: rgba(255, 255, 255, 0); }
 }
 
 .video-progress-bar {

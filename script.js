@@ -906,38 +906,67 @@ function initMobileInfiniteScroll() {
     if (window.innerWidth >= 900) return; // Only on mobile
     
     const container = document.querySelector('.gallery-container');
-    const items = container.querySelectorAll('.gallery-item');
-    if (items.length < 5) return; // Clones not loaded
-    
+    const drifter = document.querySelector('.gallery-drifter');
+    const originalItems = Array.from(drifter.querySelectorAll('.gallery-item:not(.clone)'));
+    if (originalItems.length === 0) return;
+
+    // Build 3 sets (total 9 items) dynamically for seamless infinite looping
+    if (drifter.querySelectorAll('.gallery-item').length < 9) {
+        drifter.innerHTML = '';
+        const allItems = [];
+        for (let set = 0; set < 3; set++) {
+            originalItems.forEach((item) => {
+                const clone = item.cloneNode(true);
+                drifter.appendChild(clone);
+                allItems.push(clone);
+            });
+        }
+
+        // Re-bind modal click events for all 9 cards
+        const captions = [
+            "🌸 Capturing memories that will last a lifetime.",
+            "✨ A sparkling reminder of our special connection.",
+            "☕ Warm cups, warmer smiles, and beautiful mornings."
+        ];
+        allItems.forEach((item, index) => {
+            const originalIdx = index % originalItems.length;
+            item.addEventListener('click', () => {
+                const imgSrc = item.querySelector('img').src;
+                openModal(imgSrc, captions[originalIdx]);
+            });
+        });
+    }
+
+    const updatedItems = drifter.querySelectorAll('.gallery-item');
     const getScrollPosForIndex = (index) => {
-        const item = items[index];
+        const item = updatedItems[index];
         return item.offsetLeft - (container.offsetWidth - item.offsetWidth) / 2;
     };
 
-    // Center the first real item (index 1) on load
-    const firstRealPos = getScrollPosForIndex(1);
-    container.scrollLeft = firstRealPos;
+    // Center Card 2 of Set B (index 4) on load
+    const centerPos = getScrollPosForIndex(4);
+    container.scrollLeft = centerPos;
 
-    // Scroll listener for seamless looping
+    // Scroll listener for seamless looping (manual marquee style)
     container.addEventListener('scroll', () => {
         if (isGalleryScrolling) return;
 
         const scrollLeft = container.scrollLeft;
-        const firstRealPos = getScrollPosForIndex(1);
-        const lastRealPos = getScrollPosForIndex(3);
-        const cloneStartPos = getScrollPosForIndex(0);
-        const cloneEndPos = getScrollPosForIndex(4);
+        const setWidth = getScrollPosForIndex(6) - getScrollPosForIndex(3); // Width of exactly 3 cards + gaps
+        
+        const leftThreshold = getScrollPosForIndex(2); // Card 3 of Set A
+        const rightThreshold = getScrollPosForIndex(6); // Card 1 of Set C
 
-        // If swiping right (finger moves left, scrolling right) and passing the last card
-        if (scrollLeft >= (lastRealPos + cloneEndPos) / 2) {
+        // If swiping right (finger moves left, scrolling right) and passing the right threshold
+        if (scrollLeft >= rightThreshold) {
             isGalleryScrolling = true;
-            container.scrollLeft = firstRealPos + (scrollLeft - cloneEndPos);
+            container.scrollLeft = scrollLeft - setWidth;
             setTimeout(() => { isGalleryScrolling = false; }, 50);
         }
-        // If swiping left (finger moves right, scrolling left) and passing the first card
-        else if (scrollLeft <= (firstRealPos + cloneStartPos) / 2) {
+        // If swiping left (finger moves right, scrolling left) and passing the left threshold
+        else if (scrollLeft <= leftThreshold) {
             isGalleryScrolling = true;
-            container.scrollLeft = lastRealPos - (cloneStartPos - scrollLeft);
+            container.scrollLeft = scrollLeft + setWidth;
             setTimeout(() => { isGalleryScrolling = false; }, 50);
         }
     });
@@ -1321,6 +1350,62 @@ function updateProgressBar(currentTime, duration) {
     timeDisplay.textContent = `${curMin}:${curSec} / ${durMin}:${durSec}`;
 }
 
+// 10-Second Skip Functionality (YouTube-like)
+const skipBackBtn = document.getElementById('btn-skip-back');
+const skipForwardBtn = document.getElementById('btn-skip-forward');
+
+function skipVideo(seconds) {
+    if (isUsingFallback) {
+        fallbackTime = Math.max(0, Math.min(fallbackDuration, fallbackTime + seconds));
+        updateProgressBar(fallbackTime, fallbackDuration);
+    } else {
+        video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + seconds));
+    }
+    audio.playSFX('click');
+}
+
+if (skipBackBtn) skipBackBtn.addEventListener('click', () => skipVideo(-10));
+if (skipForwardBtn) skipForwardBtn.addEventListener('click', () => skipVideo(10));
+
+// Double-tap to skip (YouTube style)
+let lastTapTime = 0;
+function handleVideoTap(e) {
+    const now = Date.now();
+    const doubleTapDelay = 300;
+    
+    if (now - lastTapTime < doubleTapDelay) {
+        const rect = e.target.getBoundingClientRect();
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        if (clientX === undefined) return;
+        
+        const clickX = clientX - rect.left;
+        const halfWidth = rect.width / 2;
+        
+        if (clickX < halfWidth) {
+            skipVideo(-10);
+            showSkipOverlay('back');
+        } else {
+            skipVideo(10);
+            showSkipOverlay('forward');
+        }
+    }
+    lastTapTime = now;
+}
+
+function showSkipOverlay(direction) {
+    const box = document.querySelector('.video-container-box');
+    const overlay = document.createElement('div');
+    overlay.className = `video-skip-overlay ${direction}`;
+    overlay.innerHTML = direction === 'back' ? '<span>◀◀ 10s</span>' : '<span>10s ▶▶</span>';
+    box.appendChild(overlay);
+    
+    setTimeout(() => {
+        overlay.style.transition = 'opacity 0.3s ease-out';
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 300);
+    }, 400);
+}
+
 // Event Listeners for Video
 video.addEventListener('timeupdate', () => {
     updateProgressBar(video.currentTime, video.duration);
@@ -1333,6 +1418,22 @@ video.addEventListener('ended', () => {
 videoPlaceholderUI.addEventListener('click', togglePlay);
 playPauseBtn.addEventListener('click', togglePlay);
 videoCanvas.addEventListener('click', togglePlay);
+
+// Attach tap/click listeners to the video elements
+video.addEventListener('click', handleVideoTap);
+videoCanvas.addEventListener('click', handleVideoTap);
+
+// Touch support for mobile double-tap
+video.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+        handleVideoTap(e);
+    }
+});
+videoCanvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+        handleVideoTap(e);
+    }
+});
 
 function handleVideoEnded() {
     fallbackPlaying = false;
