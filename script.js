@@ -901,6 +901,9 @@ let galleryDriftId = null;
 const galleryItems = document.querySelectorAll('.gallery-item');
 
 function startGalleryDrift() {
+    // Disable drift animation on mobile to prevent touch scroll interference and save CPU
+    if (window.innerWidth < 900) return;
+    
     let angle = 0;
     
     function drift() {

@@ -958,8 +958,7 @@ html, body {
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
-        display: flex;
-        align-items: center;
+        display: block; /* Change from flex to block to fix mobile scroll locks */
         padding: 0;
     }
     /* Hide scrollbar for clean visual appearance */
