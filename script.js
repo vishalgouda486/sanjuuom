@@ -829,6 +829,7 @@ document.getElementById('btn-begin').addEventListener('click', () => {
 document.getElementById('btn-to-gallery').addEventListener('click', () => {
     transitionSection('timeline-section', 'gallery-section', () => {
         startGalleryDrift();
+        initMobileInfiniteScroll();
     });
 });
 
@@ -895,10 +896,52 @@ function setupTimelineIntersectionObserver() {
 
 
 /* ==========================================================================
-   9. Floating Gallery Drift & Modal
+   9. Floating Gallery Drift & Modal & Infinite Mobile Scroll
    ========================================================================== */
 let galleryDriftId = null;
 const galleryItems = document.querySelectorAll('.gallery-item');
+let isGalleryScrolling = false;
+
+function initMobileInfiniteScroll() {
+    if (window.innerWidth >= 900) return; // Only on mobile
+    
+    const container = document.querySelector('.gallery-container');
+    const items = container.querySelectorAll('.gallery-item');
+    if (items.length < 5) return; // Clones not loaded
+    
+    const getScrollPosForIndex = (index) => {
+        const item = items[index];
+        return item.offsetLeft - (container.offsetWidth - item.offsetWidth) / 2;
+    };
+
+    // Center the first real item (index 1) on load
+    const firstRealPos = getScrollPosForIndex(1);
+    container.scrollLeft = firstRealPos;
+
+    // Scroll listener for seamless looping
+    container.addEventListener('scroll', () => {
+        if (isGalleryScrolling) return;
+
+        const scrollLeft = container.scrollLeft;
+        const firstRealPos = getScrollPosForIndex(1);
+        const lastRealPos = getScrollPosForIndex(3);
+        const cloneStartPos = getScrollPosForIndex(0);
+        const cloneEndPos = getScrollPosForIndex(4);
+
+        // If swiping right (finger moves left, scrolling right) and passing the last card
+        if (scrollLeft >= (lastRealPos + cloneEndPos) / 2) {
+            isGalleryScrolling = true;
+            container.scrollLeft = firstRealPos + (scrollLeft - cloneEndPos);
+            setTimeout(() => { isGalleryScrolling = false; }, 50);
+        }
+        // If swiping left (finger moves right, scrolling left) and passing the first card
+        else if (scrollLeft <= (firstRealPos + cloneStartPos) / 2) {
+            isGalleryScrolling = true;
+            container.scrollLeft = lastRealPos - (cloneStartPos - scrollLeft);
+            setTimeout(() => { isGalleryScrolling = false; }, 50);
+        }
+    });
+}
 
 function startGalleryDrift() {
     // Disable drift animation on mobile to prevent touch scroll interference and save CPU

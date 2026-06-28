@@ -880,6 +880,11 @@ html, body {
     will-change: transform;
 }
 
+/* Hide cloned cards on desktop */
+.gallery-item.clone {
+    display: none;
+}
+
 /* Distinct positioning & rotation for 3D layout */
 .gallery-item.item-1 {
     top: 10%;
@@ -939,7 +944,7 @@ html, body {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding: var(--space-md) 0;
+        padding: var(--space-lg) 0 var(--space-md) 0; /* Increased top padding to move text down */
     }
     .gallery-container {
         width: 100vw;
@@ -973,6 +978,9 @@ html, body {
         scroll-snap-align: center;
         flex-shrink: 0;
         box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    }
+    .gallery-item.clone {
+        display: block; /* Show cloned cards on mobile for infinite loop */
     }
     .gallery-item:hover {
         transform: translateY(-10px) scale(1.02) !important;
