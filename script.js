@@ -992,6 +992,7 @@ function initMobileInfiniteScroll() {
     // Touch Event Listeners to pause autoscroll during user interaction
     container.addEventListener('touchstart', () => {
         isGalleryUserInteracting = true;
+        container.style.scrollSnapType = 'x mandatory'; // Enable snapping immediately on touch
         if (galleryInteractionTimeout) clearTimeout(galleryInteractionTimeout);
     }, { passive: true });
 
@@ -1015,8 +1016,14 @@ function initMobileInfiniteScroll() {
     
     function crawl() {
         if (!isGalleryUserInteracting && !isGalleryScrolling) {
+            // Temporarily disable scroll-snap during autoscroll so the browser doesn't fight the JS scroll
+            container.style.scrollSnapType = 'none';
+            
             floatScrollPos += 0.55; // Extremely smooth slow crawl (0.55px per frame)
             container.scrollLeft = Math.floor(floatScrollPos);
+        } else {
+            // Re-enable scroll-snap during touch/swipe interaction
+            container.style.scrollSnapType = 'x mandatory';
         }
         galleryAutoscrollId = requestAnimationFrame(crawl);
     }
