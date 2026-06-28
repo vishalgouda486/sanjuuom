@@ -1243,6 +1243,49 @@ html, body {
     100% { opacity: 0; background: rgba(255, 255, 255, 0); }
 }
 
+/* Premium Video Loader Spinner */
+.video-loader-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    z-index: 9;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.video-loader-spinner.hidden {
+    opacity: 0;
+}
+
+.spinner-ring {
+    width: 44px;
+    height: 44px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid var(--accent-pink);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    filter: drop-shadow(0 0 8px var(--accent-pink));
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.video-loader-spinner span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
 .video-progress-bar {
     flex-grow: 1;
     height: 4px;

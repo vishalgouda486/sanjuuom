@@ -1331,6 +1331,11 @@ function togglePlay() {
                     playPauseBtn.querySelector('.icon-play').classList.add('hidden');
                     playPauseBtn.querySelector('.icon-pause').classList.remove('hidden');
                 }).catch(error => {
+                    // Ignore AbortError (e.g. user paused during buffering) to prevent accidental fallback
+                    if (error.name === 'AbortError') {
+                        console.log("Playback interrupted. Ignoring.");
+                        return;
+                    }
                     console.warn("Playback failed. Switching to fallback:", error);
                     handleVideoError(error);
                     // Re-trigger play state on the fallback
@@ -1426,6 +1431,35 @@ video.addEventListener('ended', () => {
 videoPlaceholderUI.addEventListener('click', togglePlay);
 playPauseBtn.addEventListener('click', togglePlay);
 videoCanvas.addEventListener('click', togglePlay);
+
+// Video Buffering/Loader Spinner Events
+const videoLoader = document.getElementById('video-loader');
+
+video.addEventListener('waiting', () => {
+    if (videoLoader) videoLoader.classList.remove('hidden');
+});
+video.addEventListener('loadstart', () => {
+    if (videoLoader) videoLoader.classList.remove('hidden');
+});
+video.addEventListener('seeking', () => {
+    if (videoLoader) videoLoader.classList.remove('hidden');
+});
+
+video.addEventListener('playing', () => {
+    if (videoLoader) videoLoader.classList.add('hidden');
+});
+video.addEventListener('canplay', () => {
+    if (videoLoader) videoLoader.classList.add('hidden');
+});
+video.addEventListener('seeked', () => {
+    if (videoLoader) videoLoader.classList.add('hidden');
+});
+video.addEventListener('pause', () => {
+    if (videoLoader) videoLoader.classList.add('hidden');
+});
+video.addEventListener('error', () => {
+    if (videoLoader) videoLoader.classList.add('hidden');
+});
 
 // Attach tap/click listeners to the video elements
 video.addEventListener('click', handleVideoTap);
