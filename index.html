@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Sanjuu, with love ❤️</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div id="custom-cursor"></div>
+    <canvas id="cursor-trail"></canvas>
+
+    <!-- Background Music & SFX Manager -->
+    <div id="audio-toggle" class="audio-control muted" title="Enable Sound">
+        <svg class="icon-mute" viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M3.63 3.63L2.22 5.04L7.18 10H3v4h4l5 5v-6.18l4.43 4.43c-.48.37-1.03.66-1.61.85v2.05c1.12-.23 2.15-.71 3.03-1.4l2.51 2.51l1.41-1.41L3.63 3.63M10 15.17L7.83 13H5v-2h2.83l2.17-2.17v6.34M12 4L9.91 6.09L12 8.18V4m4.27 3c1.07 1.25 1.73 2.87 1.73 4.65c0 .76-.12 1.48-.34 2.16l1.52 1.52c.53-1.12.82-2.37.82-3.68c0-3.32-2.03-6.17-4.96-7.37v2.02M14 8.79l1.63 1.63c.23-.44.37-.94.37-1.47c0-1.48-.95-2.73-2-3.17v3.01z"/>
+        </svg>
+        <svg class="icon-unmute" viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02M3 9v6h4l5 5V4L7 9H3zm7 5.17L7.83 12H5v-2h2.83L10 7.83v6.34z"/>
+        </svg>
+        <span class="audio-status-text">Click for Sound</span>
+    </div>
+
+    <!-- Cinematic Background -->
+    <div id="cinematic-bg">
+        <div class="aurora-glow purple"></div>
+        <div class="aurora-glow pink"></div>
+        <div class="aurora-glow blue"></div>
+        <canvas id="stars-canvas"></canvas>
+        <canvas id="fireflies-canvas"></canvas>
+    </div>
+
+    <!-- 1. Loading Screen -->
+    <div id="loading-screen" class="active">
+        <canvas id="loading-stars"></canvas>
+        <div class="loader-content">
+            <div class="heart-container">
+                <!-- SVG Heart with drawing stroke animation -->
+                <svg class="heart-svg" viewBox="0 0 100 90">
+                    <path id="heart-path" d="M50 85 C50 85 5 50 5 25 C5 10 20 -5 40 10 C45 15 50 20 50 20 C50 20 55 15 60 10 C80 -5 95 10 95 25 C95 50 50 85 50 85 Z" />
+                </svg>
+                <div class="heart-pulse-fill"></div>
+            </div>
+            <div class="loader-text-wrapper">
+                <p id="loader-quote" class="typewriter-text"></p>
+                <div class="percentage-counter"><span id="load-percentage">0</span>%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Wrapper (Revealed after loading) -->
+    <div id="app-wrapper" class="hidden">
+
+        <!-- 2. Hero Section -->
+        <section id="hero-section" class="narrative-section active-section">
+            <div class="hero-container">
+                <div class="heading-glow-bg"></div>
+                <h1 class="hero-title" id="hero-title"></h1>
+                <p class="hero-subtitle" id="hero-subtitle">I made something only for you.</p>
+                <div class="hero-btn-wrap">
+                    <button id="btn-begin" class="glass-btn magnetic" data-sound="whoosh">
+                        <span class="btn-text">✨ Begin Our Journey</span>
+                        <div class="btn-glow-border"></div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Memory Timeline -->
+        <section id="timeline-section" class="narrative-section hidden-section">
+            <div class="section-header">
+                <h2 class="cinematic-title">Our Story So Far</h2>
+                <p class="cinematic-subtitle">Every second with you is a treasure.</p>
+            </div>
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                
+                <!-- Memory 1 -->
+                <div class="timeline-card-wrapper left scroll-trigger">
+                    <div class="timeline-card magnetic-hover" data-tilt>
+                        <div class="card-image-wrap">
+                            <img src="assets/images/day_we_met.png" alt="The Day We Met" loading="lazy">
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="card-content">
+                            <span class="card-icon">🌸</span>
+                            <h3>The Day We Met</h3>
+                            <p>Remember where it all began. The world seemed to stop, and everything became brighter.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Memory 2 -->
+                <div class="timeline-card-wrapper right scroll-trigger">
+                    <div class="timeline-card magnetic-hover" data-tilt>
+                        <div class="card-image-wrap">
+                            <img src="assets/images/funniest_moment.png" alt="Our Funniest Moment" loading="lazy">
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="card-content">
+                            <span class="card-icon">😂</span>
+                            <h3>Our Funniest Moment</h3>
+                            <p>Laughing until our stomachs hurt. Those silly, unfiltered moments are my absolute favorite.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Memory 3 -->
+                <div class="timeline-card-wrapper left scroll-trigger">
+                    <div class="timeline-card magnetic-hover" data-tilt>
+                        <div class="card-image-wrap">
+                            <img src="assets/images/favorite_picture.png" alt="My Favorite Picture of Us" loading="lazy">
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="card-content">
+                            <span class="card-icon">📸</span>
+                            <h3>My Favorite Picture of Us</h3>
+                            <p>You shine brighter than the sun here. The happiness in your eyes is what I want to protect forever.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Memory 4 -->
+                <div class="timeline-card-wrapper right scroll-trigger">
+                    <div class="timeline-card magnetic-hover" data-tilt>
+                        <div class="card-image-wrap">
+                            <img src="assets/images/late_night.png" alt="Late Night Conversations" loading="lazy">
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="card-content">
+                            <span class="card-icon">🌙</span>
+                            <h3>Late Night Conversations</h3>
+                            <p>Talking about everything and nothing until the stars faded. In those hours, I found my home.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Memory 5 -->
+                <div class="timeline-card-wrapper left scroll-trigger">
+                    <div class="timeline-card magnetic-hover" data-tilt>
+                        <div class="card-image-wrap">
+                            <img src="assets/images/little_things.png" alt="The Little Things About You" loading="lazy">
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="card-content">
+                            <span class="card-icon">💙</span>
+                            <h3>The Little Things About You</h3>
+                            <p>The way you smile, the kindness in your voice, and how you make me feel safe. It's the little things that made me fall.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-footer">
+                <button id="btn-to-gallery" class="glass-btn magnetic" data-sound="whoosh">
+                    <span>Scroll Down or Click to Continue 💫</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 4. Floating Gallery -->
+        <section id="gallery-section" class="narrative-section hidden-section">
+            <div class="section-header">
+                <h2 class="cinematic-title">Moments Frozen In Time</h2>
+                <p class="cinematic-subtitle">Hover to reflect, click to immerse.</p>
+            </div>
+            <div class="gallery-container">
+                <div class="gallery-drifter">
+                    <div class="gallery-item item-1 magnetic-hover" data-tilt>
+                        <img src="assets/images/gallery_1.png" alt="Aesthetic Moment 1" loading="lazy">
+                        <div class="gallery-item-glow"></div>
+                    </div>
+                    <div class="gallery-item item-2 magnetic-hover" data-tilt>
+                        <img src="assets/images/gallery_2.png" alt="Aesthetic Moment 2" loading="lazy">
+                        <div class="gallery-item-glow"></div>
+                    </div>
+                    <div class="gallery-item item-3 magnetic-hover" data-tilt>
+                        <img src="assets/images/gallery_3.png" alt="Aesthetic Moment 3" loading="lazy">
+                        <div class="gallery-item-glow"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-footer">
+                <button id="btn-to-letter" class="glass-btn magnetic" data-sound="whoosh">
+                    <span>Read My Letter ✉️</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 5. Love Letter Section -->
+        <section id="letter-section" class="narrative-section hidden-section">
+            <canvas id="rose-petals-canvas"></canvas>
+            <div class="letter-wrapper">
+                <div class="letter-card">
+                    <div class="letter-border-gold"></div>
+                    <div class="letter-paper">
+                        <h2 class="letter-title">A Letter From My Heart</h2>
+                        <div class="letter-content-area">
+                            <div id="letter-paragraphs">
+                                <p class="letter-p" data-text="Sanjuu, from the moment our paths crossed, my world started changing in ways I never expected. You brought a gentle warmth into my life, a quiet joy that makes even the simplest moments feel extraordinary. Every laugh we shared, every late-night conversation, and every little memory has built something beautiful inside my heart."></p>
+                                <p class="letter-p" data-text="It's not just about the big milestones; it's about the comfort of knowing you're in the world. It's the way your laughter can instantly brighten a heavy day, and how your kindness inspires me to be a better person. You are my favorite thought, my safest harbor, and the person I want to share my tomorrows with."></p>
+                                <p class="letter-p" data-text="I wanted to create this space just for you, to show you how much you mean to me. As you read these words, please know they come from the very deepest, most sincere corner of my soul. I'm so incredibly grateful for you, just as you are."></p>
+                            </div>
+                            <div class="letter-typing-container">
+                                <span id="letter-typing-text"></span><span class="letter-cursor">|</span>
+                            </div>
+                        </div>
+                        <div class="letter-footer-btn">
+                            <button id="btn-letter-next" class="glass-btn gold-btn magnetic" data-sound="click">
+                                <span>Continue</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Proposal Video Section -->
+        <section id="video-section" class="narrative-section hidden-section">
+            <div class="spotlight-overlay"></div>
+            <div class="video-wrapper">
+                <div class="video-container-box">
+                    <!-- Standard video player. If video.mp4 is missing, script.js draws on a overlay canvas -->
+                    <video id="proposal-video" playsinline>
+                        <source src="assets/video.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <canvas id="video-canvas-fallback"></canvas>
+                    <div id="video-controls">
+                        <button id="btn-play-pause" class="video-control-btn">
+                            <svg class="icon-play" viewBox="0 0 24 24" width="24" height="24">
+                                <path fill="currentColor" d="M8 5v14l11-7z"/>
+                            </svg>
+                            <svg class="icon-pause hidden" viewBox="0 0 24 24" width="24" height="24">
+                                <path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                            </svg>
+                        </button>
+                        <div class="video-progress-bar">
+                            <div id="video-progress-filled"></div>
+                        </div>
+                        <span id="video-time-display">0:00 / 0:00</span>
+                    </div>
+                    <div id="video-placeholder-ui">
+                        <div class="placeholder-icon">🎬</div>
+                        <h3>Our Special Video</h3>
+                        <p>Click to play the cinematic preview.</p>
+                        <span class="tip-text">(To use your own video, place a file named <code>video.mp4</code> in the <code>assets/</code> folder)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Disclaimer Card Section -->
+        <section id="disclaimer-section" class="narrative-section hidden-section">
+            <div class="disclaimer-wrapper">
+                <div class="disclaimer-card">
+                    <div class="disclaimer-glow-purple"></div>
+                    <div class="disclaimer-glow-blue"></div>
+                    <h2 class="disclaimer-title">❤️ A Small Promise ❤️</h2>
+                    <div class="disclaimer-content">
+                        <p class="disclaimer-p">Before we take the next step, I want to promise you something very important. Love is about freedom, respect, and happiness above all else.</p>
+                        <p class="disclaimer-p">Whatever answer is in your heart right now, it is the right answer. There is absolutely no pressure, no expectations, and no rush.</p>
+                        <p class="disclaimer-p" id="disclaimer-glowing-line">No matter what you decide, you'll always have a friend in me. 💙</p>
+                    </div>
+                    <div class="disclaimer-btn-wrap">
+                        <button id="btn-disclaimer-continue" class="glass-btn magnetic" data-sound="whoosh">
+                            <span>Continue</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. Decision Page -->
+        <section id="decision-section" class="narrative-section hidden-section">
+            <div class="decision-container">
+                <h2 class="decision-title">No Pressure, Sanjuu ❤️</h2>
+                <p class="decision-subtitle">Your happiness will always matter most.</p>
+                <div class="decision-buttons">
+                    <button id="btn-yes" class="glass-btn yes-btn magnetic" data-sound="sparkle">
+                        <span class="btn-text">❤️ Yes</span>
+                        <div class="btn-glow-border"></div>
+                    </button>
+                    <button id="btn-maybe" class="glass-btn maybe-btn magnetic" data-sound="click">
+                        <span class="btn-text">😊 I Need Some Time</span>
+                        <div class="btn-glow-border"></div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8a. If YES Screen -->
+        <section id="yes-screen" class="narrative-section hidden-section">
+            <canvas id="fireworks-canvas"></canvas>
+            <div class="decision-result-container">
+                <h1 class="result-title glow-text-pink">You just made me the happiest person alive ❤️</h1>
+                <p class="result-subtitle">Our beautiful journey begins today.</p>
+                <button id="btn-yes-continue" class="glass-btn magnetic" data-sound="whoosh">
+                    <span>Walk Into Our Future 🌹</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 8b. If MAYBE Screen -->
+        <section id="maybe-screen" class="narrative-section hidden-section">
+            <div class="decision-result-container">
+                <h1 class="result-title">Take all the time you need.</h1>
+                <div class="maybe-text-content">
+                    <p>Your happiness matters much more than a quick answer.</p>
+                    <p>I'll always respect whatever your heart chooses.</p>
+                </div>
+                <button id="btn-maybe-continue" class="glass-btn magnetic" data-sound="whoosh">
+                    <span>Continue 💫</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 9. Ending Scene -->
+        <section id="ending-section" class="narrative-section hidden-section">
+            <div class="ending-container">
+                <div class="ending-sky-container">
+                    <!-- Canvas for moon, stars, aurora, and blooming rose -->
+                    <canvas id="ending-canvas"></canvas>
+                </div>
+                <div class="ending-text-wrapper">
+                    <div id="ending-credits" class="credits-container">
+                        <!-- Messages will fade in and out sequentially here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Image Modal for Timeline Gallery -->
+    <div id="image-modal" class="modal-overlay hidden">
+        <div class="modal-close">&times;</div>
+        <div class="modal-content-wrap">
+            <img id="modal-image" src="" alt="Enlarged view">
+            <div id="modal-caption" class="modal-caption"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
